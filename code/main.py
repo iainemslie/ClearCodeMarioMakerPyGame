@@ -1,6 +1,9 @@
 import pygame
 import sys
 from settings import *
+from os.path import join
+
+from pygame.image import load
 
 from editor import Editor
 
@@ -13,6 +16,11 @@ class Main:
         self.clock = pygame.time.Clock()
 
         self.editor = Editor()
+
+        # cursor
+        surf = load(join('graphics', 'cursors', 'mouse.png')).convert_alpha()
+        cursor = pygame.cursors.Cursor((0, 0), surf)
+        pygame.mouse.set_cursor(cursor)
 
     def run(self):
         while True:
