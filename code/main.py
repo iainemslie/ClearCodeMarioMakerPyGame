@@ -1,4 +1,5 @@
 import pygame
+import sys
 from settings import *
 
 from editor import Editor
@@ -17,7 +18,7 @@ class Main:
         while True:
             dt = self.clock.tick() / 1000
 
-            self.editor.run(dt)
+            self.editor.run()
             pygame.display.update()
 
 
