@@ -9,10 +9,13 @@ from menu import Menu
 
 
 class Editor:
-    def __init__(self):
+    def __init__(self, land_tiles):
         # main setup
         self.display_surface = pygame.display.get_surface()
         self.canvas_data = {}
+
+        # imports
+        self.land_tiles = land_tiles
 
         # navigation
         self.origin = vector()
@@ -37,7 +40,29 @@ class Editor:
 
         return distance_to_origin.x, distance_to_origin.y
 
+    def check_neighbours(self, cell_pos):
+
+        # create a local cluster
+        cluster_size = 3
+        local_cluster = [(cell_pos[0] + col - int(cluster_size / 2),
+                          cell_pos[1] + row - int(cluster_size / 2))
+                         for col in range(cluster_size)
+                         for row in range(cluster_size)]
+
+        # check neighbours
+        for cell in local_cluster:
+            if cell in self.canvas_data:
+                self.canvas_data[cell].terrain_neighbours = []
+                for name, side in NEIGHBOR_DIRECTIONS.items():
+                    neighbour_cell = (cell[0] + side[0], cell[1] + side[1])
+
+                    if neighbour_cell in self.canvas_data:
+                        if self.canvas_data[neighbour_cell].has_terrain:
+                            self.canvas_data[cell].terrain_neighbours.append(
+                                name)
+
     # input
+
     def event_loop(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
@@ -91,6 +116,8 @@ class Editor:
                 else:
                     self.canvas_data[current_cell] = CanvasTile(
                         self.selection_index)
+
+                self.check_neighbours(current_cell)
                 self.last_selected_cell = current_cell
 
     # drawing
@@ -128,9 +155,9 @@ class Editor:
 
             # ground
             if tile.has_terrain:
-                test_surf = pygame.surface.Surface((TILE_SIZE, TILE_SIZE))
-                test_surf.fill('brown')
-                self.display_surface.blit(test_surf, pos)
+                terrain_string = ''.join(tile.terrain_neighbours)
+                terrain_style = terrain_string if terrain_string in self.land_tiles else 'X'
+                self.display_surface.blit(self.land_tiles[terrain_style], pos)
 
             # coins
             if tile.coin:
