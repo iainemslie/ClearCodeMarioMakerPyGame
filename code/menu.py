@@ -61,7 +61,6 @@ class Menu:
                 return sprite.get_id()
 
     def highlight_indicator(self, index):
-        print(EDITOR_DATA[index]['menu'])
         if EDITOR_DATA[index]['menu'] == 'terrain':
             pygame.draw.rect(self.display_surface,
                              BUTTON_LINE_COLOR, self.tile_button_rect.inflate(4, 4), 5, 4)
