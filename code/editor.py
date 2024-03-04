@@ -219,7 +219,7 @@ class Editor:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_RETURN:
-                self.switch(self.create_grid)
+                self.switch(self.create_grid())
 
             self.pan_input(event)
             self.selection_hotkeys(event)

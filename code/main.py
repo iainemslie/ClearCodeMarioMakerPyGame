@@ -39,7 +39,7 @@ class Main:
     def switch(self, grid=None):
         self.transition.active = True
         if grid:
-            self.level = Level(grid, self.switch)
+            self.level = Level(grid, self.switch, {'land': self.land_tiles})
 
     def run(self):
         while True:
