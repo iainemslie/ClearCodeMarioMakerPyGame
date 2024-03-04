@@ -3,6 +3,7 @@ import sys
 from settings import *
 from support import *
 
+from os import walk
 from os.path import join
 from pygame.image import load
 from pygame.math import Vector2 as vector
@@ -44,6 +45,18 @@ class Main:
         self.diamond = import_folder(join('graphics', 'items', 'diamond'))
         self.particle = import_folder(join('graphics', 'items', 'particle'))
 
+        # palm trees
+        self.palms = {folder: import_folder(join('graphics', 'terrain', 'palm', folder))
+                      for folder in list(walk(join('graphics', 'terrain', 'palm')))[0][1]}
+
+        # enemies
+        self.spikes = load(
+            join('graphics', 'enemies', 'spikes', 'spikes.png')).convert_alpha()
+        self.tooth = {folder: import_folder(join('graphics', 'enemies', 'tooth', folder))
+                      for folder in list(walk(join('graphics', 'enemies', 'tooth')))[0][1]}
+        self.shell = {folder: import_folder(join('graphics', 'enemies', 'shell_left', folder))
+                      for folder in list(walk(join('graphics', 'enemies', 'shell_left')))[0][1]}
+
     def toggle(self):
         self.editor_active = not self.editor_active
 
@@ -58,6 +71,10 @@ class Main:
                                'silver': self.silver,
                                'diamond': self.diamond,
                                'particle': self.particle,
+                               'palms': self.palms,
+                               'spikes': self.spikes,
+                               'tooth': self.tooth,
+                               'shell': self.shell,
                                })
 
     def run(self):
