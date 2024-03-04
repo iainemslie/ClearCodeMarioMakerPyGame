@@ -122,6 +122,11 @@ class Editor:
             if value['frame index'] >= value['length']:
                 value['frame index'] = 0
 
+    def mouse_on_object(self):
+        for sprite in self.canvas_objects:
+            if sprite.rect.collidepoint(mouse_pos()):
+                return sprite
+
     # input
     def event_loop(self):
         for event in pygame.event.get():
@@ -199,6 +204,12 @@ class Editor:
 
     def canvas_remove(self):
         if mouse_buttons()[2] and not self.menu.rect.collidepoint(mouse_pos()):
+
+            # delete object
+            selected_object = self.mouse_on_object()
+            if selected_object:
+                if EDITOR_DATA[selected_object.tile_id]['style'] not in ('player', 'sky'):
+                    selected_object.kill()
 
             # delete tiles
             if self.canvas_data:
