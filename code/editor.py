@@ -291,7 +291,7 @@ class Editor:
                                  frames=self.animations[self.selection_index]['frames'],
                                  tile_id=self.selection_index,
                                  origin=self.origin,
-                                 group=self.canvas_objects)
+                                 group=groups)
                     self.object_timer.activate()
 
     def canvas_remove(self):

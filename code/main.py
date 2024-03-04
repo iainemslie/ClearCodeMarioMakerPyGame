@@ -30,8 +30,19 @@ class Main:
         pygame.mouse.set_cursor(cursor)
 
     def imports(self):
+        # terrain
         self.land_tiles = import_folder_dict(
             join('graphics', 'terrain', 'land'))
+        self.water_bottom = load(
+            join('graphics', 'terrain', 'water', 'water_bottom.png')).convert_alpha()
+        self.water_top_animation = import_folder(
+            join('graphics', 'terrain', 'water', 'animation'))
+
+        # coins
+        self.gold = import_folder(join('graphics', 'items', 'gold'))
+        self.silver = import_folder(join('graphics', 'items', 'silver'))
+        self.diamond = import_folder(join('graphics', 'items', 'diamond'))
+        self.particle = import_folder(join('graphics', 'items', 'particle'))
 
     def toggle(self):
         self.editor_active = not self.editor_active
@@ -39,7 +50,15 @@ class Main:
     def switch(self, grid=None):
         self.transition.active = True
         if grid:
-            self.level = Level(grid, self.switch, {'land': self.land_tiles})
+            self.level = Level(grid, self.switch, {
+                               'land': self.land_tiles,
+                               'water bottom': self.water_bottom,
+                               'water top': self.water_top_animation,
+                               'gold': self.gold,
+                               'silver': self.silver,
+                               'diamond': self.diamond,
+                               'particle': self.particle,
+                               })
 
     def run(self):
         while True:
