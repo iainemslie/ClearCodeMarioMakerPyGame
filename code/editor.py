@@ -9,7 +9,9 @@ from pygame.image import load
 
 from settings import *
 from support import *
+
 from menu import Menu
+from timer import Timer
 
 
 class Editor:
@@ -42,6 +44,7 @@ class Editor:
         # objects
         self.canvas_objects = pygame.sprite.Group()
         self.object_drag_active = False
+        self.object_timer = Timer(400)
 
         # player
         CanvasObject(
@@ -186,14 +189,18 @@ class Editor:
                     self.check_neighbours(current_cell)
                     self.last_selected_cell = current_cell
             else:  # object
-                CanvasObject(pos=mouse_pos(),
-                             frames=self.animations[self.selection_index]['frames'],
-                             tile_id=self.selection_index,
-                             origin=self.origin,
-                             group=self.canvas_objects)
+                if not self.object_timer.active:
+                    CanvasObject(pos=mouse_pos(),
+                                 frames=self.animations[self.selection_index]['frames'],
+                                 tile_id=self.selection_index,
+                                 origin=self.origin,
+                                 group=self.canvas_objects)
+                    self.object_timer.activate()
 
     def canvas_remove(self):
         if mouse_buttons()[2] and not self.menu.rect.collidepoint(mouse_pos()):
+
+            # delete tiles
             if self.canvas_data:
                 current_cell = self.get_current_cell()
                 if current_cell in self.canvas_data:
@@ -288,6 +295,7 @@ class Editor:
         # updating
         self.animation_update(dt)
         self.canvas_objects.update(dt)
+        self.object_timer.update()
 
         # drawing
         self.display_surface.fill('white')
