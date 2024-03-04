@@ -358,7 +358,31 @@ class Editor:
 
                 self.display_surface.blit(surf, rect)
 
-    # update
+    def display_sky(self, dt):
+        self.display_surface.fill(SKY_COLOR)
+        y = self.sky_handle.rect.centery
+
+        # horizon lines
+        if y > 0:
+            horizon_rect1 = pygame.Rect(0, y - 10, WINDOW_WIDTH, 10)
+            horizon_rect2 = pygame.Rect(0, y - 16, WINDOW_WIDTH, 4)
+            horizon_rect3 = pygame.Rect(0, y - 20, WINDOW_WIDTH, 2)
+            pygame.draw.rect(self.display_surface,
+                             HORIZON_TOP_COLOR, horizon_rect1)
+            pygame.draw.rect(self.display_surface,
+                             HORIZON_TOP_COLOR, horizon_rect2)
+            pygame.draw.rect(self.display_surface,
+                             HORIZON_TOP_COLOR, horizon_rect3)
+
+        # draw the sea
+        if 0 < y < WINDOW_HEIGHT:
+            sea_rect = pygame.Rect(0, y, WINDOW_WIDTH, WINDOW_HEIGHT)
+            pygame.draw.rect(self.display_surface, SEA_COLOR, sea_rect)
+        if y < 0:
+            self.display_surface.fill(SEA_COLOR)
+
+        pygame.draw.line(self.display_surface, HORIZON_COLOR,
+                         (0, y), (WINDOW_WIDTH, y), 3)
 
     def run(self, dt):
         self.event_loop()
@@ -370,9 +394,10 @@ class Editor:
 
         # drawing
         self.display_surface.fill('white')
+        self.display_sky(dt)
         self.draw_level()
         self.draw_tile_lines()
-        pygame.draw.circle(self.display_surface, 'red', self.origin, 10)
+        # pygame.draw.circle(self.display_surface, 'red', self.origin, 10)
         self.preview()
         self.menu.display(self.selection_index)
 
