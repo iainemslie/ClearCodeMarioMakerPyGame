@@ -1,6 +1,5 @@
 import pygame
 from settings import *
-
 from pygame.image import load
 
 
@@ -31,16 +30,16 @@ class Menu:
 
         # button areas
         generic_button_rect = pygame.Rect(
-            self.rect.topleft, (self.rect.width // 2, self.rect.height // 2))
+            self.rect.topleft, (self.rect.width / 2, self.rect.height / 2))
         button_margin = 5
         self.tile_button_rect = generic_button_rect.copy(
         ).inflate(-button_margin, -button_margin)
         self.coin_button_rect = generic_button_rect.move(
-            self.rect.width / 2, 0).inflate(-button_margin, -button_margin)
+            self.rect.height / 2, 0).inflate(-button_margin, -button_margin)
         self.enemy_button_rect = generic_button_rect.move(
-            0, self.rect.height / 2).inflate(-button_margin, -button_margin)
-        self.palm_button_rect = generic_button_rect.move(
             self.rect.height / 2, self.rect.width / 2).inflate(-button_margin, -button_margin)
+        self.palm_button_rect = generic_button_rect.move(
+            0, self.rect.width / 2).inflate(-button_margin, -button_margin)
 
         # create the buttons
         self.buttons = pygame.sprite.Group()
@@ -62,17 +61,17 @@ class Menu:
 
     def highlight_indicator(self, index):
         if EDITOR_DATA[index]['menu'] == 'terrain':
-            pygame.draw.rect(self.display_surface,
-                             BUTTON_LINE_COLOR, self.tile_button_rect.inflate(4, 4), 5, 4)
+            pygame.draw.rect(self.display_surface, BUTTON_LINE_COLOR,
+                             self.tile_button_rect.inflate(4, 4), 5, 4)
         if EDITOR_DATA[index]['menu'] == 'coin':
-            pygame.draw.rect(self.display_surface,
-                             BUTTON_LINE_COLOR, self.coin_button_rect.inflate(4, 4), 5, 4)
+            pygame.draw.rect(self.display_surface, BUTTON_LINE_COLOR,
+                             self.coin_button_rect.inflate(4, 4), 5, 4)
         if EDITOR_DATA[index]['menu'] == 'enemy':
-            pygame.draw.rect(self.display_surface,
-                             BUTTON_LINE_COLOR, self.enemy_button_rect.inflate(4, 4), 5, 4)
+            pygame.draw.rect(self.display_surface, BUTTON_LINE_COLOR,
+                             self.enemy_button_rect.inflate(4, 4), 5, 4)
         if EDITOR_DATA[index]['menu'] in ('palm bg', 'palm fg'):
-            pygame.draw.rect(self.display_surface,
-                             BUTTON_LINE_COLOR, self.palm_button_rect.inflate(4, 4), 5, 4)
+            pygame.draw.rect(self.display_surface, BUTTON_LINE_COLOR,
+                             self.palm_button_rect.inflate(4, 4), 5, 4)
 
     def display(self, index):
         self.buttons.update()
