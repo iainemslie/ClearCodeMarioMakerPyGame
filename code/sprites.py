@@ -10,6 +10,12 @@ class Generic(pygame.sprite.Sprite):
         self.rect = self.image.get_rect(topleft=pos)
 
 
+class Block(Generic):
+    def __init__(self, pos, size, group):
+        surf = pygame.Surface(size)
+        super().__init__(pos, surf, group)
+
+
 class Animated(Generic):
     def __init__(self, assets, pos, group):
         self.animation_frames = assets
@@ -78,14 +84,20 @@ class Shell(Generic):
 
 
 class Player(Generic):
-    def __init__(self, pos, group):
-        super().__init__(pos, pygame.Surface((32, 64)), group)
+    def __init__(self, pos, group, collision_sprites):
+        super().__init__(pos, pygame.Surface((80, 64)), group)
         self.image.fill('red')
 
         # movement
         self.direction = vector()
-        self.pos = vector(self.rect.topleft)
+        self.pos = vector(self.rect.center)
         self.speed = 300
+        self.gravity = 4
+        self.on_floor = False
+
+        # collision
+        self.collision_sprites = collision_sprites
+        self.hitbox = self.rect.inflate(-50, 0)
 
     def input(self):
         keys = pygame.key.get_pressed()
@@ -97,10 +109,54 @@ class Player(Generic):
         else:
             self.direction.x = 0
 
+        if keys[pygame.K_SPACE] and self.on_floor:
+            self.direction.y = -2
+
     def move(self, dt):
-        self.pos += self.direction * self.speed * dt
-        self.rect.topleft = (round(self.pos.x), round(self.pos.y))
+        # horizontal
+        self.pos.x += self.direction.x * self.speed * dt
+        self.hitbox.centerx = round(self.pos.x)
+        self.rect.centerx = self.hitbox.centerx
+        self.collision('horizontal')
+
+        # vertical
+        self.pos.y += self.direction.y * self.speed * dt
+        self.hitbox.centery = round(self.pos.y)
+        self.rect.centery = self.hitbox.centery
+        self.collision('vertical')
+
+    def apply_gravity(self, dt):
+        self.direction.y += self.gravity * dt
+        self.rect.y += self.direction.y
+
+    def check_on_floor(self):
+        floor_rect = pygame.Rect(
+            self.hitbox.bottomleft, (self.hitbox.width, 2))
+        floor_sprites = [
+            sprite for sprite in self.collision_sprites if sprite.rect.colliderect(floor_rect)]
+        self.on_floor = True if floor_sprites else False
+
+    def collision(self, direction):
+        for sprite in self.collision_sprites:
+            if sprite.rect.colliderect(self.hitbox):
+                if direction == 'horizontal':
+                    if self.direction.x > 0:  # moving right
+                        self.hitbox.right = sprite.rect.left
+                    if self.direction.x < 0:  # moving left
+                        self.hitbox.left = sprite.rect.right
+                    self.rect.centerx = self.hitbox.centerx
+                    self.pos.x = self.hitbox.centerx
+                else:  # vertical
+                    if self.direction.y > 0:  # moving down
+                        self.hitbox.bottom = sprite.rect.top
+                    if self.direction.y < 0:  # moving up
+                        self.hitbox.top = sprite.rect.bottom
+                    self.rect.centery = self.hitbox.centery
+                    self.pos.y = self.hitbox.centery
+                    self.direction.y = 0
 
     def update(self, dt):
         self.input()
+        self.apply_gravity(dt)
         self.move(dt)
+        self.check_on_floor()
