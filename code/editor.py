@@ -254,6 +254,9 @@ class Editor:
             else:
                 self.origin.x -= event.y * 50
 
+            for sprite in self.canvas_objects:
+                sprite.pan_pos(self.origin)
+
         # panning update
         if self.pan_active:
             self.origin = vector(mouse_pos()) - self.pan_offset
@@ -271,8 +274,8 @@ class Editor:
 
     def menu_click(self, event):
         if event.type == pygame.MOUSEBUTTONDOWN and self.menu.rect.collidepoint(mouse_pos()):
-            self.selection_index = self.menu.click(
-                mouse_pos(), mouse_buttons())
+            new_index = self.menu.click(mouse_pos(), mouse_buttons())
+            self.selection_index = new_index if new_index else self.selection_index
 
     def canvas_add(self):
         if mouse_buttons()[0] and not self.menu.rect.collidepoint(mouse_pos()) and not self.object_drag_active:
