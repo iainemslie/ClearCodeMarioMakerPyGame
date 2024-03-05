@@ -56,6 +56,8 @@ class Main:
                       for folder in list(walk(join('graphics', 'enemies', 'tooth')))[0][1]}
         self.shell = {folder: import_folder(join('graphics', 'enemies', 'shell_left', folder))
                       for folder in list(walk(join('graphics', 'enemies', 'shell_left')))[0][1]}
+        self.pearl = load(join('graphics', 'enemies',
+                          'pearl', 'pearl.png')).convert_alpha()
 
         # player
         self.player_graphics = {folder: import_folder(join('graphics', 'player', folder))
@@ -80,6 +82,7 @@ class Main:
                                'tooth': self.tooth,
                                'shell': self.shell,
                                'player': self.player_graphics,
+                               'pearl': self.pearl,
                                })
 
     def run(self):
