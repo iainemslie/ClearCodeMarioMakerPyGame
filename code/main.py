@@ -63,6 +63,9 @@ class Main:
         self.player_graphics = {folder: import_folder(join('graphics', 'player', folder))
                                 for folder in list(walk(join('graphics', 'player')))[0][1]}
 
+        # clouds
+        self.clouds = import_folder(join('graphics', 'clouds'))
+
     def toggle(self):
         self.editor_active = not self.editor_active
 
@@ -83,6 +86,7 @@ class Main:
                                'shell': self.shell,
                                'player': self.player_graphics,
                                'pearl': self.pearl,
+                               'clouds': self.clouds,
                                })
 
     def run(self):
