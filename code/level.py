@@ -11,7 +11,7 @@ from random import choice, randint
 
 
 class Level:
-    def __init__(self, grid, switch, asset_dict):
+    def __init__(self, grid, switch, asset_dict, audio):
         self.display_surface = pygame.display.get_surface()
         self.switch = switch
 
@@ -22,7 +22,7 @@ class Level:
         self.collision_sprites = pygame.sprite.Group()
         self.shell_sprites = pygame.sprite.Group()
 
-        self.build_level(grid, asset_dict)
+        self.build_level(grid, asset_dict, audio['jump'])
 
         # level limits
         self.level_limits = {
@@ -37,7 +37,18 @@ class Level:
         pygame.time.set_timer(self.cloud_timer, 2000)
         self.startup_clouds()
 
-    def build_level(self, grid, asset_dict):
+        # sound
+        self.bg_music = audio['music']
+        self.bg_music.set_volume(0.4)
+        self.bg_music.play(loops=-1)
+
+        self.coin_sound = audio['coin']
+        self.coin_sound.set_volume(0.3)
+
+        self.hit_sound = audio['hit']
+        self.hit_sound.set_volume(0.3)
+
+    def build_level(self, grid, asset_dict, jump_sound):
         for layer_name, layer in grid.items():
             for pos, data in layer.items():
                 if layer_name == 'terrain':
@@ -53,7 +64,7 @@ class Level:
                             pos, asset_dict['water bottom'], self.all_sprites, LEVEL_LAYERS['water'])
 
                 match data:
-                    case 0:  self.player = Player(pos, asset_dict['player'], self.all_sprites, self.collision_sprites)
+                    case 0:  self.player = Player(pos, asset_dict['player'], self.all_sprites, self.collision_sprites, jump_sound)
                     case 1:
                         self.horizon_y = pos[1]
                         self.all_sprites.horizon_y = pos[1]
@@ -119,6 +130,7 @@ class Level:
         collided_coins = pygame.sprite.spritecollide(
             self.player, self.coin_sprites, True)
         for sprite in collided_coins:
+            self.coin_sound.play()
             Particle(self.particle_surfs, sprite.rect.center, self.all_sprites)
 
     def get_damage(self):
@@ -126,6 +138,7 @@ class Level:
             self.player, self.damage_sprites, False, pygame.sprite.collide_mask)
         if collision_sprites:
             self.player.damage()
+            self.hit_sound.play()
 
     def event_loop(self):
         for event in pygame.event.get():
@@ -134,6 +147,7 @@ class Level:
                 sys.exit()
             if event.type == pygame.KEYDOWN and event.key == pygame.K_ESCAPE:
                 self.switch()
+                self.bg_music.stop()
             if event.type == self.cloud_timer:
                 surf = choice(self.cloud_surfs)
                 surf = pygame.transform.scale2x(
